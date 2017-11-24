@@ -18,7 +18,6 @@ async def signup(ctx, emoji):
     c.execute("SELECT name FROM emojis WHERE emoji = ?", (emojihex,))
     try:
         r = c.fetchone()[0]
-        r = await bot.get_member(r)
         await bot.say("Another user is already using that emote :frowning: Try another.")
         conn.close()
         return
@@ -30,8 +29,10 @@ async def signup(ctx, emoji):
             await bot.say("Signed up " + ctx.message.author.mention + " with emoji " + emoji)
             return
         except:
-            await bot.say("Seems like you're already signed up, or something went wrong!")
+            c.execute("UPDATE emojis SET emoji = ? WHERE name = ?", (emojihex, ctx.message.author.id))
+            conn.commit()
             conn.close()
+            await bot.say("Changed " + ctx.message.author.mention + "'s emoji to " + emoji)
             return
 
 #TODO: Move this to it's own file
