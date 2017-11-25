@@ -7,6 +7,7 @@ from discord.ext import commands #Used to define commands and some other things
 import credentials #The Bot's Secret Key
 import botobject
 import signup #The Function Which Handles Signing Up
+import reactions #Handles adding & removing reactions
 
 bot = botobject.bot #import the bot object
 
