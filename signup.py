@@ -34,7 +34,8 @@ async def signup(ctx, emoji):
     c.execute("SELECT name FROM emojis WHERE emoji = ?", (emojihex,))
     try:
         r = c.fetchone()[0]
-        await bot.say("Another user is already using that emote :frowning: Try another.")
+        name = await bot.get_user_info(r)
+        await bot.say(name.mention + " is already using that emote :frowning: Try another.")
         conn.close()
         return
     except:
