@@ -3,9 +3,10 @@ import asyncio
 from discord.ext import commands
 import botobject
 import sqlite3
+import re
 
 bot = botobject.bot
-        
+
 @bot.command(pass_context=True)
 async def signup(ctx, emoji):
     try:
@@ -14,7 +15,18 @@ async def signup(ctx, emoji):
         await bot.say("I'm glad you want to join the game, but the correct syntax for this command is `!signup :emoji:`")
     conn = sqlite3.connect("SignedUp.db")
     c = conn.cursor()
-    emojihex = hex(ord(emoji))
+    try:
+        emojihex = hex(ord(emoji))
+    except:
+        await bot.say("Please use a regular emoji. Emoji with a custom skin colour emoji will not work.")
+        return
+    l = bool(re.search('[a-zA-Z]', emoji))
+    n = bool(re.search(r'\d', emoji))
+
+    if l or n:
+        await bot.say("That's an invalid string! You need to use an emoji!!\n\n*Using an emoji and it won't work? Make sure it's not Nitro and try a different one.*")
+        return
+
     c.execute("SELECT name FROM emojis WHERE emoji = ?", (emojihex,))
     try:
         r = c.fetchone()[0]
