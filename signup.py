@@ -20,10 +20,14 @@ async def signup(ctx, emoji):
     except:
         await bot.say("Please use a regular emoji. Emoji with a custom skin colour emoji will not work.")
         return
-    l = bool(re.search('[a-zA-Z]', emoji))
-    n = bool(re.search(r'\d', emoji))
 
-    if l or n:
+    try:
+        await bot.add_reaction(ctx.message, emoji)
+        invalid = False
+    except:
+        invalid = True
+
+    if invalid:
         await bot.say("That's an invalid string! You need to use an emoji!!\n\n*Using an emoji and it won't work? Make sure it's not Nitro and try a different one.*")
         return
 
