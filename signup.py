@@ -35,7 +35,10 @@ async def signup(ctx, emoji):
     try:
         r = c.fetchone()[0]
         name = await bot.get_user_info(r)
-        await bot.say(name.mention + " is already using that emote :frowning: Try another.")
+        if name == ctx.message.author:
+            await bot.say("You can't sign up again with the same emote, silly! :stuck_out_tongue:\n\n*You have already signed up with that emote*")
+        else:
+            await bot.say(name.mention + " is already using that emote :frowning: Try another.")
         conn.close()
         return
     except:
