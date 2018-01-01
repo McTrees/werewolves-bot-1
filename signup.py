@@ -16,7 +16,7 @@ async def signup(ctx, emoji):
     conn = sqlite3.connect("SignedUp.db")
     c = conn.cursor()
     try:
-        emojihex = hex(ord(emoji))
+        emojihex = emoji
     except:
         await bot.say("Please use a regular emoji. Emoji with a custom skin colour emoji will not work.")
         return
@@ -47,17 +47,20 @@ async def signup(ctx, emoji):
             conn.commit()
             conn.close()
             await bot.say("Signed up " + ctx.message.author.mention + " with emoji " + emoji)
+            print("Signed up " + ctx.message.author.mention + " with emoji " + emoji)
             return
         except:
             c.execute("UPDATE emojis SET emoji = ? WHERE name = ?", (emojihex, ctx.message.author.id))
             conn.commit()
             conn.close()
             await bot.say("Changed " + ctx.message.author.mention + "'s emoji to " + emoji)
+            print("Changed " + ctx.message.author.mention + "'s emoji to " + emoji)
             return
 
 #TODO: Move this to it's own file
 @bot.command()
 async def reset():
+    print("reset the database")
     conn = sqlite3.connect("SignedUp.db")
     c = conn.cursor()
     c.execute("DELETE FROM emojis;")
