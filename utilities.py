@@ -1,4 +1,10 @@
 import sqlite3
+import botobject
+
+bot = botobject.bot #import the bot object
+
+
+
 
 #edits the supplied userdata
 def editUserData(id, column, value):

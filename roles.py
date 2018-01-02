@@ -1,3 +1,6 @@
+import botobject
+
+bot = botobject.bot #import the bot object
 @bot.command(pass_context=True)
 async def fortuneTeller(ctx,data):
 	print("the "+ctx.message.author.mention+" requested to see "+data+"'s role")
