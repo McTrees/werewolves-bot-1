@@ -105,6 +105,8 @@ async def getUser(ctx,data):
 @bot.command(pass_context=True)
 async def startSeason(ctx):
 	resetRoles2()
+	
+	c.execute("INSERT into season (id,start) VALUES (SELECT max(id) + 1 FROM season,?)",(datetime.datetime.now()))
 	print("starting the season")
 	conn = sqlite3.connect(config.databaseName)
 	c = conn.cursor()
@@ -121,13 +123,7 @@ def CreateTable():
     sqlite_file = config.databaseName
     conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
-    c.execute("CREATE TABLE emojis (name TEXT UNIQUE PRIMARY KEY, emoji TEXT)")
-
-
-def CreateTableRoles():
-    sqlite_file = config.databaseName
-    conn = sqlite3.connect(config.databaseName)
-    c = conn.cursor()
-    c.execute("CREATE TABLE userData (id TEXT UNIQUE PRIMARY KEY, nickname TEXT, emoji TEXT, role TEXT, demonized INTEGER, enchanted INTEGER, protected DATE, powers INTEGER)")
-
-
+    #c.execute("CREATE TABLE emojis (name TEXT UNIQUE PRIMARY KEY, emoji TEXT)")
+    #c.execute("CREATE TABLE userData (id TEXT UNIQUE PRIMARY KEY, nickname TEXT, emoji TEXT, role TEXT, demonized INTEGER, enchanted INTEGER, protected DATE, powers INTEGER)")
+    c.execute("CREATE TABLE season (id TEXT UNIQUE PRIMARY KEY, start DATE, end DATE)")
+CreateTable()
