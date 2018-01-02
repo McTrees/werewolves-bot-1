@@ -139,10 +139,8 @@ def getId(data):
 		data= data[2:-1]
 	conn = sqlite3.connect(databaseName)
 	c = conn.cursor()
-	print("######################\t\t\t"+data)
 	c.execute("select id from userData where id=? or emoji=? or nickname=?",(data,data,data))
 	id = c.fetchone()[0]
-	print(id)
 	return(id)
 	conn.commit()
 	conn.close()
