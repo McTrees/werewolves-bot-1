@@ -12,12 +12,17 @@ bot = botobject.bot
 import utilities
 @bot.command(pass_context=True)
 async def signup(ctx, emoji):
+    conn = sqlite3.connect(config.databaseName)
+    c = conn.cursor()
+    c.execute("select end from seasons where id = (select max(id) FROM seasons)")
+    s = list(c.fetchone())[0]
+    if (s==None):
+        await bot.say("The game already started! Signup next season.")
+        return
     try:
         emoji = emoji #check an emoji was provided
     except:
         await bot.say("I'm glad you want to join the game, but the correct syntax for this command is `!signup :emoji:`")
-    conn = sqlite3.connect(config.databaseName)
-    c = conn.cursor()
     try:
         emojihex = emoji
     except:
@@ -70,22 +75,15 @@ async def reset():
     conn.commit()
     conn.close()
     await bot.say("done :)")
-@bot.command()
-async def resetRoles():
+
+def resetRoles():
     print("reset the database")
     conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
     c.execute("DELETE FROM userData;")
     conn.commit()
     conn.close()
-    await bot.say("done :)")
-def resetRoles2():
-    print("reset the database")
-    conn = sqlite3.connect(config.databaseName)
-    c = conn.cursor()
-    c.execute("DELETE FROM userData;")
-    conn.commit()
-    conn.close()
+
 @bot.command(pass_context=True)
 async def fortuneTeller(ctx,data):
 	print("the "+ctx.message.author.mention+" requested to see "+data+"'s role")
@@ -102,14 +100,24 @@ async def fortuneTeller(ctx,data):
 async def getUser(ctx,data):
 	await bot.say(utilities.getId(data))
 
+@bot.command()
+async def endSeason():
+	conn = sqlite3.connect(config.databaseName)
+	c = conn.cursor()
+	print("ending the season")
+	c.execute("update seasons set end=? where id = (select max(id) FROM seasons)",[datetime.datetime.now()])
+	c.execute("DELETE FROM emojis;")
+	conn.commit()
+	conn.close()
+
+	
 @bot.command(pass_context=True)
 async def startSeason(ctx):
-	resetRoles2()
-	
-	c.execute("INSERT into season (id,start) VALUES (SELECT max(id) + 1 FROM season,?)",(datetime.datetime.now()))
+	resetRoles()
 	print("starting the season")
 	conn = sqlite3.connect(config.databaseName)
 	c = conn.cursor()
+	c.execute("INSERT into seasons (start) values(?)",[str(datetime.datetime.now())])
 	c.execute('SELECT * FROM emojis') 
 	role ="innocent"
 	for row in c.fetchall():
@@ -123,7 +131,7 @@ def CreateTable():
     sqlite_file = config.databaseName
     conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
-    #c.execute("CREATE TABLE emojis (name TEXT UNIQUE PRIMARY KEY, emoji TEXT)")
-    #c.execute("CREATE TABLE userData (id TEXT UNIQUE PRIMARY KEY, nickname TEXT, emoji TEXT, role TEXT, demonized INTEGER, enchanted INTEGER, protected DATE, powers INTEGER)")
-    c.execute("CREATE TABLE season (id TEXT UNIQUE PRIMARY KEY, start DATE, end DATE)")
-CreateTable()
+    c.execute("CREATE TABLE emojis (name TEXT UNIQUE PRIMARY KEY, emoji TEXT)")
+    c.execute("CREATE TABLE userData (id TEXT UNIQUE PRIMARY KEY, nickname TEXT, emoji TEXT, role TEXT, demonized INTEGER, enchanted INTEGER, protected DATE, powers INTEGER)")
+    c.execute("CREATE TABLE seasons (id AUTO_INCREMENT INTEGER, start DATE, end DATE)")
+#CreateTable()
