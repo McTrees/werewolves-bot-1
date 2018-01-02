@@ -15,10 +15,12 @@ async def signup(ctx, emoji):
     conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
     c.execute("select end from seasons where id = (select max(id) FROM seasons)")
-    s = list(c.fetchone())[0]
-    if (s==None):
-        await bot.say("The game already started! Signup next season.")
-        return
+    if c.fetchone()!=None:
+        c.execute("select end from seasons where id = (select max(id) FROM seasons)")
+        s = list(c.fetchone())[0]
+        if (s==None):
+            await bot.say("The game already started! Signup next season.")
+            return
     try:
         emoji = emoji #check an emoji was provided
     except:
@@ -133,5 +135,5 @@ def CreateTable():
     c = conn.cursor()
     c.execute("CREATE TABLE emojis (name TEXT UNIQUE PRIMARY KEY, emoji TEXT)")
     c.execute("CREATE TABLE userData (id TEXT UNIQUE PRIMARY KEY, nickname TEXT, emoji TEXT, role TEXT, demonized INTEGER, enchanted INTEGER, protected DATE, powers INTEGER)")
-    c.execute("CREATE TABLE seasons (id AUTO_INCREMENT INTEGER, start DATE, end DATE)")
-#CreateTable()
+    c.execute("CREATE TABLE seasons (id INTEGER UNIQUE PRIMARY KEY, start DATE, end DATE)")
+CreateTable()
