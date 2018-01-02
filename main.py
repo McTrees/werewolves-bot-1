@@ -2,6 +2,10 @@
 import discord #The Discord API
 import asyncio #Used for await and async
 from discord.ext import commands #Used to define commands and some other things
+import botobject
+import sqlite3
+import re
+import datetime
 
 #Import other dependencies created by Ben
 import credentials #The Bot's Secret Key
@@ -19,3 +23,4 @@ async def on_ready():
     print('------')
 
 bot.run(credentials.BotSecret) #run bot
+

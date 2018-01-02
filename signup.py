@@ -4,6 +4,8 @@ from discord.ext import commands
 import botobject
 import sqlite3
 import re
+import datetime
+import csv
 
 bot = botobject.bot
 
@@ -67,12 +69,53 @@ async def reset():
     conn.commit()
     conn.close()
     await bot.say("done :)")
+@bot.command()
+async def resetRoles():
+    print("reset the database")
+    conn = sqlite3.connect("SignedUp.db")
+    c = conn.cursor()
+    c.execute("DELETE FROM playerinfo;")
+    conn.commit()
+    conn.close()
+    await bot.say("done :)")
+	
+@bot.command(pass_context=True)
+async def fortuneTeller(ctx,data):
+	print("the "+ctx.message.author.mention+" requested to see "+data+"'s role")
+	if (datetime.datetime.now().hour < 20 and datetime.datetime.now().hour > 8):
+		await bot.say("you can only run that command between 8pm and 8am GMT")
+		return
+	if not("fortune teller" in [y.name.lower() for y in ctx.message.author.roles]):
+		await bot.say("only the @Fortune Teller can use that command")
+		return
+	else:
+		await bot.say(data+"'s role is:......[insert role here]")
 
-
-
+@bot.command(pass_context=True)
+async def startSeason(ctx):
+	resetRoles()
+	print("starting the season")
+	conn = sqlite3.connect("SignedUp.db")
+	c = conn.cursor()
+	c.execute('SELECT * FROM emojis') 
+	role ="innocent"
+	for row in c:
+		row = (list(row))
+		c.execute("INSERT INTO playerinfo (id, nickname,emoji,role) VALUES (?, ?, ?, ?)", (row[0],ctx.message.server.get_member(row[0]).display_name ,row[1],role))
+	conn.commit()
+	conn.close()
+	await bot.say("done :)")
 
 def CreateTable():
     sqlite_file = "SignedUp.db"
     conn = sqlite3.connect("SignedUp.db")
     c = conn.cursor()
     c.execute("CREATE TABLE emojis (name TEXT UNIQUE PRIMARY KEY, emoji TEXT)")
+
+
+def CreateTableRoles():
+    sqlite_file = "SignedUp.db"
+    conn = sqlite3.connect("SignedUp.db")
+    c = conn.cursor()
+    c.execute("CREATE TABLE playerinfo (id TEXT UNIQUE PRIMARY KEY, nickname TEXT, emoji TEXT, role TEXT, demonized INTEGER, enchanted INTEGER, protected DATE, powers INTEGER)")
+CreateTableRoles()
