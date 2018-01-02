@@ -8,7 +8,6 @@ import datetime
 import csv
 import config
 
-databaseName = "database.db"
 bot = botobject.bot
 import utilities
 @bot.command(pass_context=True)
@@ -17,7 +16,7 @@ async def signup(ctx, emoji):
         emoji = emoji #check an emoji was provided
     except:
         await bot.say("I'm glad you want to join the game, but the correct syntax for this command is `!signup :emoji:`")
-    conn = sqlite3.connect(databaseName)
+    conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
     try:
         emojihex = emoji
@@ -65,7 +64,7 @@ async def signup(ctx, emoji):
 @bot.command()
 async def reset():
     print("reset the database")
-    conn = sqlite3.connect(databaseName)
+    conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
     c.execute("DELETE FROM emojis;")
     conn.commit()
@@ -74,7 +73,7 @@ async def reset():
 @bot.command()
 async def resetRoles():
     print("reset the database")
-    conn = sqlite3.connect(databaseName)
+    conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
     c.execute("DELETE FROM userData;")
     conn.commit()
@@ -82,7 +81,7 @@ async def resetRoles():
     await bot.say("done :)")
 def resetRoles2():
     print("reset the database")
-    conn = sqlite3.connect(databaseName)
+    conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
     c.execute("DELETE FROM userData;")
     conn.commit()
@@ -101,19 +100,17 @@ async def fortuneTeller(ctx,data):
 
 @bot.command(pass_context=True)
 async def getUser(ctx,data):
-	await bot.say(getId(data))
+	await bot.say(utilities.getId(data))
 
 @bot.command(pass_context=True)
 async def startSeason(ctx):
 	resetRoles2()
 	print("starting the season")
-	conn = sqlite3.connect(databaseName)
+	conn = sqlite3.connect(config.databaseName)
 	c = conn.cursor()
 	c.execute('SELECT * FROM emojis') 
 	role ="innocent"
-	print(c)
 	for row in c.fetchall():
-		print(row)
 		row = (list(row))
 		c.execute("INSERT INTO userData (id, nickname,emoji,role) VALUES (?, ?, ?, ?)", (row[0],ctx.message.server.get_member(row[0]).display_name ,row[1],role))
 	conn.commit()
@@ -121,26 +118,16 @@ async def startSeason(ctx):
 	await bot.say("done :)")
 
 def CreateTable():
-    sqlite_file = databaseName
-    conn = sqlite3.connect(databaseName)
+    sqlite_file = config.databaseName
+    conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
     c.execute("CREATE TABLE emojis (name TEXT UNIQUE PRIMARY KEY, emoji TEXT)")
 
 
 def CreateTableRoles():
-    sqlite_file = databaseName
-    conn = sqlite3.connect(databaseName)
+    sqlite_file = config.databaseName
+    conn = sqlite3.connect(config.databaseName)
     c = conn.cursor()
     c.execute("CREATE TABLE userData (id TEXT UNIQUE PRIMARY KEY, nickname TEXT, emoji TEXT, role TEXT, demonized INTEGER, enchanted INTEGER, protected DATE, powers INTEGER)")
 
-def getId(data):
-	data=str(data)
-	if data[0] == "<":
-		data= data[2:-1]
-	conn = sqlite3.connect(databaseName)
-	c = conn.cursor()
-	c.execute("select id from userData where id=? or emoji=? or nickname=?",(data,data,data))
-	id = c.fetchone()[0]
-	return(id)
-	conn.commit()
-	conn.close()
+
