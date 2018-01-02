@@ -67,41 +67,6 @@ async def signup(ctx, emoji):
             print("Changed " + ctx.message.author.mention + "'s emoji to " + emoji)
             return
 
-#TODO: Move this to it's own file
-@bot.command()
-async def reset():
-    print("reset the database")
-    conn = sqlite3.connect(config.databaseName)
-    c = conn.cursor()
-    c.execute("DELETE FROM emojis;")
-    conn.commit()
-    conn.close()
-    await bot.say("done :)")
-
-def resetRoles():
-    print("reset the database")
-    conn = sqlite3.connect(config.databaseName)
-    c = conn.cursor()
-    c.execute("DELETE FROM userData;")
-    conn.commit()
-    conn.close()
-
-@bot.command(pass_context=True)
-async def fortuneTeller(ctx,data):
-	print("the "+ctx.message.author.mention+" requested to see "+data+"'s role")
-	if (datetime.datetime.now().hour < 20 and datetime.datetime.now().hour > 8):
-		await bot.say("you can only run that command between 8pm and 8am GMT")
-		return
-	if not("fortune teller" in [y.name.lower() for y in ctx.message.author.roles]):
-		await bot.say("only the @Fortune Teller can use that command")
-		return
-	else:
-		await bot.say(data+"'s role is:......[insert role here]")
-
-@bot.command(pass_context=True)
-async def getUser(ctx,data):
-	await bot.say(utilities.getId(data))
-
 @bot.command()
 async def endSeason():
 	conn = sqlite3.connect(config.databaseName)
@@ -111,7 +76,6 @@ async def endSeason():
 	c.execute("DELETE FROM emojis;")
 	conn.commit()
 	conn.close()
-
 	
 @bot.command(pass_context=True)
 async def startSeason(ctx):
@@ -119,6 +83,7 @@ async def startSeason(ctx):
 	print("starting the season")
 	conn = sqlite3.connect(config.databaseName)
 	c = conn.cursor()
+	c.execute("DELETE FROM userData;")
 	c.execute("INSERT into seasons (start) values(?)",[str(datetime.datetime.now())])
 	c.execute('SELECT * FROM emojis') 
 	role ="innocent"
@@ -128,12 +93,3 @@ async def startSeason(ctx):
 	conn.commit()
 	conn.close()
 	await bot.say("done :)")
-
-def CreateTable():
-    sqlite_file = config.databaseName
-    conn = sqlite3.connect(config.databaseName)
-    c = conn.cursor()
-    c.execute("CREATE TABLE emojis (name TEXT UNIQUE PRIMARY KEY, emoji TEXT)")
-    c.execute("CREATE TABLE userData (id TEXT UNIQUE PRIMARY KEY, nickname TEXT, emoji TEXT, role TEXT, demonized INTEGER, enchanted INTEGER, protected DATE, powers INTEGER)")
-    c.execute("CREATE TABLE seasons (id INTEGER UNIQUE PRIMARY KEY, start DATE, end DATE)")
-CreateTable()
