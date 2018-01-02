@@ -26,4 +26,3 @@ async def on_ready():
     print('------')
 
 bot.run(credentials.BotSecret) #run bot
-
