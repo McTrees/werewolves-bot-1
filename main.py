@@ -7,11 +7,14 @@ import sqlite3
 import re
 import datetime
 
+
 #Import other dependencies created by Ben
+import config
 import credentials #The Bot's Secret Key
 import botobject
 import signup #The Function Which Handles Signing Up
 import reactions #Handles adding & removing reactions
+import utilities
 
 bot = botobject.bot #import the bot object
 
