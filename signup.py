@@ -5,7 +5,6 @@ import botobject
 import sqlite3
 import re
 import datetime
-import csv
 import config
 
 bot = botobject.bot
